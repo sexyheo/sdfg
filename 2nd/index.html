@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Costify – Philippine Construction Market Strategy</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #0A1628;
+    --secondary: #162240;
+    --accent: #00D4AA;
+    --accent2: #FF6B35;
+    --text: #E8ECF1;
+    --text-muted: #8B95A5;
+    --surface: #1A2A44;
+    --card: rgba(22, 34, 64, 0.7);
+    --gradient1: linear-gradient(135deg, #00D4AA 0%, #00A3FF 100%);
+    --gradient2: linear-gradient(135deg, #FF6B35 0%, #FF3366 100%);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--primary);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .deck {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0; left: 0;
+    display: none;
+    padding: 60px 80px;
+    overflow: hidden;
+  }
+
+  .slide.active { display: flex; }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 30px;
+    right: 40px;
+    display: flex;
+    gap: 12px;
+    z-index: 100;
+    align-items: center;
+  }
+
+  .nav-btn {
+    width: 44px; height: 44px;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    background: rgba(10,22,40,0.8);
+    backdrop-filter: blur(10px);
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.3s;
+  }
+
+  .nav-btn:hover {
+    border-color: var(--accent);
+    background: rgba(0,212,170,0.15);
+  }
+
+  .slide-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* Progress bar */
+  .progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--gradient1);
+    z-index: 100;
+    transition: width 0.4s ease;
+  }
+
+  /* ===== SLIDE STYLES ===== */
+
+  /* Slide 1: Title */
+  .slide-title {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    background: var(--primary);
+    position: relative;
+  }
+
+  .slide-title::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(0,212,170,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .slide-title::after {
+    content: '';
+    position: absolute;
+    bottom: -300px; left: 100px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,107,53,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .tag::before {
+    content: '';
+    width: 32px; height: 1.5px;
+    background: var(--accent);
+  }
+
+  .slide-title h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 72px;
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: 28px;
+    max-width: 900px;
+  }
+
+  .slide-title h1 span {
+    background: var(--gradient1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 20px;
+    color: var(--text-muted);
+    max-width: 600px;
+    line-height: 1.6;
+    margin-bottom: 40px;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 40px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .meta-row span { opacity: 0.6; }
+
+  /* Generic slide header */
+  .slide-header {
+    margin-bottom: 40px;
+    flex-shrink: 0;
+  }
+
+  .slide-header .tag { margin-bottom: 12px; }
+
+  .slide-header h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  .slide-header h2 span {
+    background: var(--gradient1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Content slides */
+  .content-slide {
+    flex-direction: column;
+    background: var(--primary);
+    position: relative;
+  }
+
+  .content-slide::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(0,212,170,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Cards grid */
+  .cards-grid {
+    display: grid;
+    gap: 20px;
+    flex: 1;
+    align-content: start;
+  }
+
+  .cards-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .cards-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .cards-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 28px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
+  }
+
+  .card:hover {
+    border-color: rgba(0,212,170,0.2);
+    transform: translateY(-2px);
+  }
+
+  .card-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+
+  .card-icon.green { background: rgba(0,212,170,0.15); color: var(--accent); }
+  .card-icon.orange { background: rgba(255,107,53,0.15); color: var(--accent2); }
+  .card-icon.blue { background: rgba(0,163,255,0.15); color: #00A3FF; }
+  .card-icon.red { background: rgba(255,51,102,0.15); color: #FF3366; }
+  .card-icon.purple { background: rgba(147,51,234,0.15); color: #9333EA; }
+
+  .card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .card p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 36px;
+  }
+
+  .stat-box {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 24px 32px;
+    flex: 1;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    background: var(--gradient1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Two column layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    flex: 1;
+  }
+
+  .col-content h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--accent);
+  }
+
+  .col-content p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  /* List items */
+  .item-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .item-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+
+  .item-list li::before {
+    content: '→';
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* Table style */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .data-table th {
+    text-align: left;
+    padding: 14px 20px;
+    background: rgba(0,212,170,0.08);
+    color: var(--accent);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .data-table td {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .data-table tr:hover td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge.compete { background: rgba(255,51,102,0.15); color: #FF3366; }
+  .badge.partner { background: rgba(0,212,170,0.15); color: var(--accent); }
+  .badge.client { background: rgba(0,163,255,0.15); color: #00A3FF; }
+  .badge.govt { background: rgba(147,51,234,0.15); color: #9333EA; }
+
+  /* Timeline */
+  .timeline {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    align-items: stretch;
+  }
+
+  .timeline-phase {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .timeline-phase .phase-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .timeline-phase h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .timeline-phase .phase-time {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .timeline-phase ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .timeline-phase li {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    padding-left: 16px;
+    position: relative;
+  }
+
+  .timeline-phase li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* Scenario cards */
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    flex: 1;
+  }
+
+  .scenario {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scenario-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    padding: 4px 12px;
+    border-radius: 6px;
+    display: inline-block;
+    width: fit-content;
+  }
+
+  .scenario-tag.best { background: rgba(0,212,170,0.15); color: var(--accent); }
+  .scenario-tag.mid { background: rgba(0,163,255,0.15); color: #00A3FF; }
+  .scenario-tag.risk { background: rgba(255,51,102,0.15); color: #FF3366; }
+
+  .scenario h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+
+  .scenario p {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    flex: 1;
+  }
+
+  .scenario .revenue {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  /* Divider line */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+    margin: 20px 0;
+  }
+
+  /* Section slide */
+  .section-slide {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: var(--primary);
+    position: relative;
+  }
+
+  .section-slide::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,212,170,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .section-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 120px;
+    font-weight: 700;
+    background: var(--gradient1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0.3;
+    line-height: 1;
+    margin-bottom: -20px;
+  }
+
+  .section-slide h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 52px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .section-slide p {
+    font-size: 18px;
+    color: var(--text-muted);
+    max-width: 500px;
+  }
+
+  /* Closing slide */
+  .closing-slide {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: var(--primary);
+    position: relative;
+  }
+
+  .closing-slide::before {
+    content: '';
+    position: absolute;
+    width: 900px; height: 900px;
+    background: radial-gradient(circle, rgba(0,212,170,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .closing-slide h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 56px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.15;
+  }
+
+  .closing-slide h2 span {
+    background: var(--gradient1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .closing-slide p {
+    font-size: 18px;
+    color: var(--text-muted);
+    max-width: 650px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+
+  .closing-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: var(--gradient1);
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--primary);
+  }
+
+  /* Slide number in corner */
+  .slide-num {
+    position: absolute;
+    bottom: 30px;
+    left: 80px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 1px;
+  }
+
+  /* Highlight text */
+  .highlight { color: var(--accent); }
+  .highlight-orange { color: var(--accent2); }
+
+  /* Small text */
+  .small-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  .flex-col { display: flex; flex-direction: column; }
+  .flex-1 { flex: 1; }
+  .gap-20 { gap: 20px; }
+  .gap-12 { gap: 12px; }
+  .mt-auto { margin-top: auto; }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide slide-title active" data-slide="1">
+    <div class="tag">Strategic Market Report</div>
+    <h1>Costify: <span>AI-Powered</span><br>Construction Cost<br>Intelligence</h1>
+    <p class="subtitle">Philippine Market Entry Strategy &amp; Competitive Landscape — Comprehensive analysis of market positioning, competition, partnerships, and go-to-market execution.</p>
+    <div class="meta-row">
+      <span>February 2026</span>
+      <span>Prepared by KAIST IP-CEO Research Team</span>
+      <span>Confidential</span>
+    </div>
+    <div class="slide-num">01 / 15</div>
+  </div>
+
+  <!-- SLIDE 2: Executive Summary -->
+  <div class="slide content-slide" data-slide="2">
+    <div class="slide-header">
+      <div class="tag">01 — Executive Summary</div>
+      <h2>The <span>Opportunity</span> at a Glance</h2>
+    </div>
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-num">$176.7B</div>
+        <div class="stat-label">Philippine Infrastructure Investment</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">207</div>
+        <div class="stat-label">Flagship Projects (IFP)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">90%</div>
+        <div class="stat-label">Projects Exceed Budget</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">7.45%</div>
+        <div class="stat-label">Infrastructure CAGR</div>
+      </div>
+    </div>
+    <div class="cards-grid cols-3">
+      <div class="card">
+        <div class="card-icon green">W</div>
+        <h3>Who — Megawide Construction</h3>
+        <p>Most innovation-oriented Philippine contractor. Pre-cast pioneer with PPP expertise. First mover for technology exclusive supply agreement.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon orange">T</div>
+        <h3>When — 2026-2027 Golden Window</h3>
+        <p>Current administration must show infrastructure results before the 2028 presidential election. Budget pressure creates urgency for cost management tools.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon blue">G</div>
+        <h3>Goal — National Procurement Standard</h3>
+        <p>Move beyond simple adoption. Lock-in as de facto standard so the next administration cannot easily remove the system from public procurement.</p>
+      </div>
+    </div>
+    <div class="slide-num">02 / 15</div>
+  </div>
+
+  <!-- SLIDE 3: Section - Market Analysis -->
+  <div class="slide section-slide" data-slide="3">
+    <div class="section-num">02</div>
+    <h2>Market Analysis</h2>
+    <p>Philippine construction industry digitalization landscape and structural opportunity</p>
+    <div class="slide-num">03 / 15</div>
+  </div>
+
+  <!-- SLIDE 4: Market Analysis Detail -->
+  <div class="slide content-slide" data-slide="4">
+    <div class="slide-header">
+      <div class="tag">02 — Market Analysis</div>
+      <h2>Asymmetric <span>Digitalization</span></h2>
+    </div>
+    <div class="two-col">
+      <div class="col-content">
+        <h3>Transactions Are Digital</h3>
+        <p>E-commerce adoption at 41.3%, mobile work at 62.9%, and government digital interaction at 58.5%. The Philippines' digital payment share has reached 57%.</p>
+        <p>The government's eGov PH app expansion, rising EGDI scores, and BIR EIS (Electronic Invoicing System) mandatory rollout are accelerating administrative digitalization.</p>
+        <h3 style="margin-top: 24px;">But Processes Are Analog</h3>
+        <p>Only <span class="highlight-orange">8.5%</span> of construction workers regularly use computers — the lowest across all industries (industry average: 41.9%). BIM adoption stands at roughly one-third, with similar proportions unaware of the concept entirely.</p>
+      </div>
+      <div class="col-content">
+        <h3>Digital Maturity Snapshot</h3>
+        <ul class="item-list">
+          <li>82% of 259 surveyed firms have taken some form of digital transformation action</li>
+          <li>26% are digital-first; 56% are "progressing well" — ~80% at mid-level or above</li>
+          <li>65% of decision-makers increased digital investment in the past 24 months</li>
+          <li>IoT (47%), drones (43%), telematics (42%), big data (41%) — all above APAC averages</li>
+          <li>Technology adoption in Philippine construction grew 400% over 3 years (ADB)</li>
+          <li>99% of executives say efficient data management is a core competitive advantage</li>
+        </ul>
+        <div style="margin-top: 20px; padding: 16px; background: rgba(0,212,170,0.06); border-radius: 12px; border-left: 3px solid var(--accent);">
+          <p style="font-size: 14px; color: var(--accent); font-weight: 500;">Key Insight: "Transactions are digital, but processes are analog." The gap between government platforms and on-site data management is Costify's entry point.</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">04 / 15</div>
+  </div>
+
+  <!-- SLIDE 5: Section - Competition -->
+  <div class="slide section-slide" data-slide="5">
+    <div class="section-num">03</div>
+    <h2>Competitive Landscape</h2>
+    <p>Mapping competitors, partners, and strategic clients across the ecosystem</p>
+    <div class="slide-num">05 / 15</div>
+  </div>
+
+  <!-- SLIDE 6: Competitor Matrix -->
+  <div class="slide content-slide" data-slide="6">
+    <div class="slide-header">
+      <div class="tag">03 — Competitive Landscape</div>
+      <h2>Competitor &amp; <span>Partner</span> Matrix</h2>
+    </div>
+    <div style="flex:1; overflow: hidden;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Entity</th>
+            <th>Type</th>
+            <th>Relationship</th>
+            <th>Key Characteristics</th>
+            <th>Costify Strategy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Procore</strong></td>
+            <td>Global Software</td>
+            <td><span class="badge compete">Competitor</span></td>
+            <td>Full-lifecycle construction management platform. MOU with PCA. $100K+/yr. 150+ countries.</td>
+            <td>Target mid-market gap; emphasize cost intelligence vs. project management breadth</td>
+          </tr>
+          <tr>
+            <td><strong>PlanSwift</strong></td>
+            <td>Estimating Tool</td>
+            <td><span class="badge partner">Complement</span></td>
+            <td>Desktop-based digital takeoff & estimating. Strong in SMB segment. No post-construction tracking.</td>
+            <td>"Embrace & Extend" — import PlanSwift data, add AI risk analysis layer</td>
+          </tr>
+          <tr>
+            <td><strong>HashMicro</strong></td>
+            <td>ERP Provider</td>
+            <td><span class="badge compete">Competitor</span></td>
+            <td>Cloud ERP with Philippines office (Pasig). AI assistant "Hashy". 3,000+ clients in SEA.</td>
+            <td>Construction-specific depth vs. general ERP breadth</td>
+          </tr>
+          <tr>
+            <td><strong>BBR Network</strong></td>
+            <td>Specialist Contractor</td>
+            <td><span class="badge client">Ideal Client</span></td>
+            <td>Global post-tensioning engineering network (50+ countries). High-risk infrastructure projects.</td>
+            <td>Offer as centralized intelligence layer for cross-border knowledge sharing</td>
+          </tr>
+          <tr>
+            <td><strong>DMCI</strong></td>
+            <td>Conglomerate</td>
+            <td><span class="badge client">Enterprise Client</span></td>
+            <td>Quadruple A contractor. ₱120-140B revenue. Vertically integrated (dev + construction).</td>
+            <td>Pilot on mega-project (NSCR); knowledge retention for retiring engineers</td>
+          </tr>
+          <tr>
+            <td><strong>DPWH</strong></td>
+            <td>Government</td>
+            <td><span class="badge govt">Reference</span></td>
+            <td>Primary infrastructure agency. Manages roads, bridges, highways. Post-report cost control.</td>
+            <td>Long-term standard registration; indirect entry via private sector validation</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide-num">06 / 15</div>
+  </div>
+
+  <!-- SLIDE 7: Procore Deep Dive -->
+  <div class="slide content-slide" data-slide="7">
+    <div class="slide-header">
+      <div class="tag">03 — Competitive Landscape</div>
+      <h2>Procore vs Costify: <span>Differentiation</span></h2>
+    </div>
+    <div class="two-col">
+      <div class="col-content">
+        <h3>Procore — "The Ecosystem Giant"</h3>
+        <ul class="item-list">
+          <li>Full-lifecycle platform: PM, safety, invoices, ERP integration, real-time collaboration</li>
+          <li>Official MOU with Philippine Constructors Association (PCA) — trained 150+ professionals</li>
+          <li>Makati Development Corporation deployment as local reference case</li>
+          <li>4.4-4.7/5 satisfaction, but steep learning curve and high cost cited on Reddit & community forums</li>
+          <li>Annual cost $100,000+ — prohibitive for mid-sized Philippine firms</li>
+        </ul>
+        <div style="margin-top: 20px; padding: 16px; background: rgba(255,51,102,0.06); border-radius: 12px; border-left: 3px solid #FF3366;">
+          <p style="font-size: 14px; color: #FF3366; font-weight: 500;">Procore's Weakness: "Hilariously bad UI" for subcontractors. Field workers and small subs resist adoption — data gaps follow.</p>
+        </div>
+      </div>
+      <div class="col-content">
+        <h3>Costify — "The Precision Blade"</h3>
+        <ul class="item-list">
+          <li>Specialized in financial anomaly detection and workforce productivity visualization</li>
+          <li>AI-driven risk prediction: combines live project data with historical patterns</li>
+          <li>Cloud-native with real-time cost tracking during execution phase</li>
+          <li>Institutional Knowledge Base: captures retiring engineers' expertise digitally</li>
+          <li>Affordable pricing accessible to mid-market contractors</li>
+        </ul>
+        <div style="margin-top: 20px; padding: 16px; background: rgba(0,212,170,0.06); border-radius: 12px; border-left: 3px solid var(--accent);">
+          <p style="font-size: 14px; color: var(--accent); font-weight: 500;">Positioning: "Procore is for managing. Costify is for controlling." Focus on where money leaks — not project documentation.</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">07 / 15</div>
+  </div>
+
+  <!-- SLIDE 8: PlanSwift + BBR -->
+  <div class="slide content-slide" data-slide="8">
+    <div class="slide-header">
+      <div class="tag">03 — Competitive Landscape</div>
+      <h2>Strategic <span>Complements</span></h2>
+    </div>
+    <div class="cards-grid cols-2">
+      <div class="card" style="display: flex; flex-direction: column;">
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+          <div class="card-icon orange">PS</div>
+          <div>
+            <h3 style="margin-bottom:2px;">PlanSwift (ConstructConnect)</h3>
+            <span class="badge partner">Integration Partner</span>
+          </div>
+        </div>
+        <p style="margin-bottom: 14px;">Most widely used desktop takeoff tool in Australian SMB market. Drag & drop interface, Excel-compatible, low-cost perpetual license.</p>
+        <p style="font-weight: 600; color: var(--text); margin-bottom: 10px;">Why Not Compete — Integrate:</p>
+        <ul class="item-list">
+          <li>PlanSwift = Calculator (static quantity takeoff). Costify = Intelligence (dynamic risk + cost prediction).</li>
+          <li>PlanSwift data dies on personal PCs after project ends. Costify turns it into institutional knowledge.</li>
+          <li>Target different buyers: PlanSwift → Estimators. Costify → PMs & Directors who ask "will this project profit?"</li>
+        </ul>
+        <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06);">
+          <p style="font-size: 13px; font-style: italic; color: var(--accent);">"PlanSwift is for counting. Costify is for controlling."</p>
+        </div>
+      </div>
+      <div class="card" style="display: flex; flex-direction: column;">
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+          <div class="card-icon blue">BBR</div>
+          <div>
+            <h3 style="margin-bottom:2px;">BBR Network</h3>
+            <span class="badge client">Ideal Enterprise Client</span>
+          </div>
+        </div>
+        <p style="margin-bottom: 14px;">Global specialist contractor network (50+ countries). Post-tensioning, stay cables, geotechnical. Bridges, LNG tanks, nuclear dome construction.</p>
+        <p style="font-weight: 600; color: var(--text); margin-bottom: 10px;">Why BBR Needs Costify:</p>
+        <ul class="item-list">
+          <li>Risk Management: Post-tensioning projects are engineering-complex — small design changes cause massive cost overruns. AI risk prediction is critical.</li>
+          <li>Global Knowledge Hub: BBR Contech (AU/NZ) expertise doesn't flow to European teams. Costify as unified intelligence layer.</li>
+          <li>Bid Competitiveness: "We use Costify AI to scientifically manage schedule delays and cost risk" becomes a differentiation point in proposals.</li>
+        </ul>
+        <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06);">
+          <p style="font-size: 13px; font-style: italic; color: #00A3FF;">Not a software vendor — a physical engineering group. Perfect supply-demand relationship with Costify.</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">08 / 15</div>
+  </div>
+
+  <!-- SLIDE 9: Section - Target Customers -->
+  <div class="slide section-slide" data-slide="9">
+    <div class="section-num">04</div>
+    <h2>Target Customers<br>&amp; Pain Points</h2>
+    <p>Who buys, why they hurt, and how Costify heals</p>
+    <div class="slide-num">09 / 15</div>
+  </div>
+
+  <!-- SLIDE 10: Pain Points -->
+  <div class="slide content-slide" data-slide="10">
+    <div class="slide-header">
+      <div class="tag">04 — Pain Points</div>
+      <h2>Four Pillars of <span>Construction Pain</span></h2>
+    </div>
+    <div class="cards-grid cols-2" style="flex:1;">
+      <div class="card">
+        <div class="card-icon red">$</div>
+        <h3>1. Financial & Risk Management Failure</h3>
+        <p>90% of large projects exceed budget and schedule. Average overrun is 65%. Construction margins hover around 5% — any overrun threatens survival. Current tools deliver "days-old data" — reactive, not predictive. Users discover budget blowouts after it's too late.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon orange">K</div>
+        <h3>2. Knowledge & Workforce Crisis</h3>
+        <p>25% skilled workforce shortage projected by 2026. Retiring experts take decades of institutional knowledge with them ("Brain Drain"). 70% of project failures trace back to knowledge-sharing failures. 60% of Australian construction PMs have degrees but under 5 years of field experience.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon purple">T</div>
+        <h3>3. Tool Limitations — Cost & Complexity</h3>
+        <p>Procore costs $100K+/year — unaffordable for mid-sized firms. "Hilariously bad UI" drives field rejection. Subcontractors "who struggle with email" cannot adopt Procore. Organizations cling to error-prone Excel out of change aversion — fragmented, no real-time sharing, no version control.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon blue">D</div>
+        <h3>4. Operational Inefficiency & Data Silos</h3>
+        <p>Accounting, scheduling, procurement each use different tools — data scattered. 20+ years of historical project data sits untapped ("mountains of untapped data"). Only 15% of firms use digital tools effectively. In the Philippines, non-cloud tools worsen field accessibility and data fragmentation.</p>
+      </div>
+    </div>
+    <div class="slide-num">10 / 15</div>
+  </div>
+
+  <!-- SLIDE 11: Target Clients -->
+  <div class="slide content-slide" data-slide="11">
+    <div class="slide-header">
+      <div class="tag">04 — Target Customers</div>
+      <h2>Priority <span>Enterprise Clients</span></h2>
+    </div>
+    <div class="cards-grid cols-3" style="flex:1;">
+      <div class="card" style="border-top: 3px solid var(--accent);">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; margin-bottom: 12px;">PRIORITY 1</div>
+        <h3>Megawide Construction</h3>
+        <p style="margin-bottom: 14px;">Most aggressive tech adopter in the Philippines. Pre-cast construction pioneer. Airport & transit infrastructure leader.</p>
+        <ul class="item-list">
+          <li>Pilot: Metro Manila $20-50M project</li>
+          <li>Read-only analytics overlay — no system replacement required</li>
+          <li>Weekly/monthly risk insight reports</li>
+          <li>Target: 25-40% cost overrun prevention</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top: 3px solid #00A3FF;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #00A3FF; letter-spacing: 2px; margin-bottom: 12px;">PRIORITY 2</div>
+        <h3>EEI Corporation</h3>
+        <p style="margin-bottom: 14px;">Largest Philippine contractor. Extensive overseas project experience — high understanding of global digital standards.</p>
+        <ul class="item-list">
+          <li>Propose free subcontractor management digitalization</li>
+          <li>Transparency boost for ESG reputation</li>
+          <li>Leverage international project experience as adoption driver</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--accent2);">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent2); letter-spacing: 2px; margin-bottom: 12px;">PRIORITY 3</div>
+        <h3>DMCI Holdings</h3>
+        <p style="margin-bottom: 14px;">Quadruple A contractor. ₱120-140B group revenue. Vertically integrated: construction + real estate + energy + mining.</p>
+        <ul class="item-list">
+          <li>Entry via NSCR mega-project team (budget: trillions of won)</li>
+          <li>Knowledge retention for retiring senior engineers</li>
+          <li>Supply chain AI optimization across in-house subsidiaries (concrete, steel, engineering)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide-num">11 / 15</div>
+  </div>
+
+  <!-- SLIDE 12: Section - GTM -->
+  <div class="slide section-slide" data-slide="12">
+    <div class="section-num">05</div>
+    <h2>Go-to-Market<br>Strategy</h2>
+    <p>Three-phase execution roadmap aligned with political cycles</p>
+    <div class="slide-num">12 / 15</div>
+  </div>
+
+  <!-- SLIDE 13: GTM Timeline -->
+  <div class="slide content-slide" data-slide="13">
+    <div class="slide-header">
+      <div class="tag">05 — Go-to-Market Strategy</div>
+      <h2>Phased <span>Execution</span> Roadmap</h2>
+    </div>
+    <div class="timeline">
+      <div class="timeline-phase" style="border-top: 3px solid var(--accent);">
+        <div class="phase-num">Phase 1</div>
+        <h3>Trust Building</h3>
+        <div class="phase-time">2026 Q1 — 2026 Q4</div>
+        <ul>
+          <li>Establish Philippine entity; Megawide JV or MOU</li>
+          <li>Local material & labor cost data crawling (cement, rebar, wages)</li>
+          <li>BCDA New Clark City pilot (low-risk road works)</li>
+          <li>Target: "15% budget savings, 2-month schedule acceleration" proof</li>
+          <li>Present results at PCA conference</li>
+          <li>Free subcontractor management digitalization for large contractors</li>
+          <li>BIR EIS e-invoice function integration — regulatory compliance hook</li>
+        </ul>
+        <div style="margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);">
+          <p style="font-family: 'JetBrains Mono'; font-size: 11px; color: var(--text-muted);">Budget: $270K (Y1)</p>
+        </div>
+      </div>
+      <div class="timeline-phase" style="border-top: 3px solid #00A3FF;">
+        <div class="phase-num">Phase 2</div>
+        <h3>Pilot Validation & Expansion</h3>
+        <div class="phase-time">2027 Q1 — 2027 Q4</div>
+        <ul>
+          <li>Approach "Build Better More" team with election urgency pitch</li>
+          <li>DPWH Grade 1 projects (₱10B+): 2-3 pilot deployments</li>
+          <li>ADB-funded project integration as "transparency monitoring tool"</li>
+          <li>Publish White Paper with Megawide collaboration results</li>
+          <li>PCAB seminar presentations; EEI & DMCI outreach using references</li>
+          <li>Government proposal: "Cost Transparency Pilot System" to DPWH/NEDA</li>
+        </ul>
+        <div style="margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);">
+          <p style="font-family: 'JetBrains Mono'; font-size: 11px; color: var(--text-muted);">Target: $500K-$2M revenue</p>
+        </div>
+      </div>
+      <div class="timeline-phase" style="border-top: 3px solid var(--accent2);">
+        <div class="phase-num">Phase 3</div>
+        <h3>Standardization & Lock-in</h3>
+        <div class="phase-time">2028 Q1 — 2029+</div>
+        <ul>
+          <li>Pre-election: support AI cost-saving as administration achievement</li>
+          <li>Post-election: align with new government's anti-corruption agenda</li>
+          <li>Push Administrative Order: "All ₱5B+ public works require AI cost verification"</li>
+          <li>PhilGEPS procurement system engine integration</li>
+          <li>eGov PH + tax filing API auto-connection</li>
+          <li>Expand to 1,600+ LGUs and private sector via paid subscriptions</li>
+          <li>Network effect: contractor + sub + government all on Costify = de facto standard</li>
+        </ul>
+        <div style="margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);">
+          <p style="font-family: 'JetBrains Mono'; font-size: 11px; color: var(--text-muted);">Goal: 30% of public bids through Costify</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">13 / 15</div>
+  </div>
+
+  <!-- SLIDE 14: Regional Strategy + Scenarios -->
+  <div class="slide content-slide" data-slide="14">
+    <div class="slide-header">
+      <div class="tag">05 — Go-to-Market Strategy</div>
+      <h2>Regional Targeting &amp; <span>Scenarios</span></h2>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; flex: 1;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <h3 style="font-family: 'Space Grotesk'; font-size: 18px; color: var(--accent); margin-bottom: 4px;">Luzon Economic Corridor — Priority Regions</h3>
+        <div class="card" style="padding: 18px;">
+          <h3 style="font-size: 15px;">1st: Metro Manila (NCR)</h3>
+          <p>Largest redevelopment & high-rise demand. Ayala Land, SMDC headquarters. First sponsorship target. BIR EIS compliance as adoption driver.</p>
+        </div>
+        <div class="card" style="padding: 18px;">
+          <h3 style="font-size: 15px;">2nd: New Clark City (Central Luzon)</h3>
+          <p>Philippines' first smart city. Digital twin & data-driven management provide bid advantages. Early-stage digital management system reference.</p>
+        </div>
+        <div class="card" style="padding: 18px;">
+          <h3 style="font-size: 15px;">3rd: CALABARZON</h3>
+          <p>Active manufacturing plant construction. Lead time reduction is critical. Material supply data accuracy determines profitability.</p>
+        </div>
+        <div class="card" style="padding: 18px;">
+          <h3 style="font-size: 15px;">4th: Cebu & Mindanao</h3>
+          <p>7,000 islands create severe regional material price variance. Typhoon-driven logistics bottlenecks. "The only AI that knows logistics costs across 7,000 islands."</p>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-family: 'Space Grotesk'; font-size: 18px; color: var(--accent); margin-bottom: 16px;">Projected Scenarios (2027-2029)</h3>
+        <div class="scenario" style="margin-bottom: 16px;">
+          <span class="scenario-tag best">Scenario A — Optimistic</span>
+          <h3>DPWH Official Adoption</h3>
+          <p>Megawide pilot succeeds. DPWH formally adopts system in 2027. By 2029, 30% of public bids pass through Costify. SEA expansion beachhead secured.</p>
+          <div class="revenue">Revenue 2027: $2M (~₩2.8B)</div>
+        </div>
+        <div class="scenario" style="margin-bottom: 16px;">
+          <span class="scenario-tag mid">Scenario B — Realistic</span>
+          <h3>BCDA + PPP Focus</h3>
+          <p>Central government rollout delayed by bureaucracy. Adoption concentrated in New Clark City and select airport/railway PPP projects. Stable B2B SaaS model.</p>
+          <div class="revenue">Revenue 2027: $500K-$800K</div>
+        </div>
+        <div class="scenario">
+          <span class="scenario-tag risk">Scenario C — Pessimistic</span>
+          <h3>Corruption Resistance</h3>
+          <p>Officials resist AI transparency (eliminates kickback opportunities). Pivot: sell to COA (audit agency) and World Bank/ADB as monitoring tool — top-down pressure.</p>
+          <div class="revenue">Mitigation: International institution channel</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">14 / 15</div>
+  </div>
+
+  <!-- SLIDE 15: Closing -->
+  <div class="slide closing-slide" data-slide="15">
+    <h2>The Data <span>Bridge</span></h2>
+    <p>Costify is not just a cost prediction AI. It is the data bridge connecting field, office, and government in real-time — the only solution resolving the Philippine construction industry's chronic budget overruns and opacity through AI.</p>
+    <div style="display: flex; gap: 48px; margin-bottom: 40px;">
+      <div style="text-align: center;">
+        <div style="font-family: 'Space Grotesk'; font-size: 36px; font-weight: 700; color: var(--accent);">$176.7B</div>
+        <div style="font-size: 13px; color: var(--text-muted);">Infrastructure Pipeline</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-family: 'Space Grotesk'; font-size: 36px; font-weight: 700; color: var(--accent2);">2026-27</div>
+        <div style="font-size: 13px; color: var(--text-muted);">Golden Entry Window</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-family: 'Space Grotesk'; font-size: 36px; font-weight: 700; color: #00A3FF;">$270K</div>
+        <div style="font-size: 13px; color: var(--text-muted);">Year 1 Investment</div>
+      </div>
+    </div>
+    <div class="closing-cta">Immediate Action: Megawide Executive Meeting →</div>
+    <div class="slide-num">15 / 15</div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <span class="slide-counter" id="counter">01 / 15</span>
+  <button class="nav-btn" onclick="prevSlide()">←</button>
+  <button class="nav-btn" onclick="nextSlide()">→</button>
+</div>
+
+<script>
+  let current = 1;
+  const total = 15;
+
+  function showSlide(n) {
+    if (n < 1 || n > total) return;
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    document.querySelector(`[data-slide="${n}"]`).classList.add('active');
+    current = n;
+    document.getElementById('counter').textContent = String(n).padStart(2,'0') + ' / ' + total;
+    document.getElementById('progress').style.width = ((n / total) * 100) + '%';
+  }
+
+  function nextSlide() { showSlide(current + 1); }
+  function prevSlide() { showSlide(current - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+  });
+</script>
+
+</body>
+</html>
